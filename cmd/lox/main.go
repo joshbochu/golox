@@ -32,13 +32,14 @@ func runFile(path string) {
 
 func runPrompt() {
 	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("> ")
 	for {
-		fmt.Println("> ")
 		if !scanner.Scan() {
 			break
 		}
 		line := scanner.Text()
 		run(line)
+		fmt.Print("> ")
 	}
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error while processing input: %v\n", err)
