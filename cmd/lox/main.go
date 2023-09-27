@@ -30,6 +30,9 @@ func runFile(path string) {
 	}
 	source := string(bytes)
 	run(source)
+	if hadError {
+		os.Exit(65)
+	}
 }
 
 func runPrompt() {
@@ -41,6 +44,9 @@ func runPrompt() {
 		}
 		line := scanner.Text()
 		run(line)
+		if hadError {
+			hadError = false
+		}
 		fmt.Print("> ")
 	}
 	if err := scanner.Err(); err != nil {
