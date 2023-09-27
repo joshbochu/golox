@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/joshbochu/lox-go/pkg/scanner"
 )
 
 func main() {
@@ -43,6 +45,9 @@ func runPrompt() {
 }
 
 func run(source string) {
-	// TODO after scanner is complete
-	fmt.Println("Running source...")
+	scanner := scanner.NewScanner(source)
+	tokens := scanner.ScanTokens()
+	for _, token := range tokens {
+		fmt.Println(token)
+	}
 }
