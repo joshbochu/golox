@@ -8,6 +8,8 @@ import (
 	"github.com/joshbochu/lox-go/pkg/scanner"
 )
 
+var hadError = false
+
 func main() {
 	switch len(os.Args) {
 	case 1: // "./main"
@@ -52,4 +54,13 @@ func run(source string) {
 	for _, token := range tokens {
 		fmt.Println(token)
 	}
+}
+
+func error(line int, message string) {
+	report(line, "", message)
+}
+
+func report(line int, where string, message string) {
+	fmt.Fprintf(os.Stderr, "[line %d] Error%s: %s\n", line, where, message)
+	hadError = true
 }
