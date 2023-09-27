@@ -9,13 +9,14 @@ import (
 )
 
 func main() {
-	if len(os.Args) > 2 { // ./lox fileName extraStuff
+	switch len(os.Args) {
+	case 1: // "./main"
+		runPrompt()
+	case 2: // "./main fileName"
+		runFile(os.Args[1])
+	default: // "./main fileName extra1 extra2 ..."
 		fmt.Println("Usage: lox [script]")
 		os.Exit(64)
-	} else if len(os.Args) == 2 { // ./lox fileName
-		runFile(os.Args[1])
-	} else { // ./lox (interactive mode)
-		runPrompt()
 	}
 }
 
