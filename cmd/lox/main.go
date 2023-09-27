@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 )
@@ -22,13 +23,26 @@ func runFile(path string) {
 		fmt.Fprintf(os.Stderr, "Error %v\n", err)
 		os.Exit(65)
 	}
-	run(string(bytes))
+	source := string(bytes)
+	run(source)
 }
 
 func runPrompt() {
-	fmt.Println("Running in interactive mode")
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Println("> ")
+		if !scanner.Scan() {
+			break
+		}
+		line := scanner.Text()
+		run(line)
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error while processing input: %v\n", err)
+	}
 }
 
 func run(source string) {
+	// TODO after scanner is complete
 	fmt.Println("Running source...")
 }
