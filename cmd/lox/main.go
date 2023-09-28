@@ -16,7 +16,7 @@ func main() {
 		runPrompt()
 	case 2: // "./main fileName"
 		runFile(os.Args[1])
-	default: // "./main fileName extra1 extra2 ..."
+	default: // "./main fileName ..."
 		fmt.Println("Usage: lox [script]")
 		os.Exit(64)
 	}
