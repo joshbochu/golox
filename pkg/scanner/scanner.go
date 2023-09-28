@@ -82,6 +82,14 @@ func (s *Scanner) scanToken() {
 		} else {
 			s.addToken(token.GREATER)
 		}
+	case "/":
+		for s.peek() != "\n" && !s.isAtEnd() {
+			s.advance()
+		}
+	case "\n":
+		s.line++
+	case " ", "\t", "\r":
+		// Ignore whitespace
 	default:
 		util.Error(s.line, "Unexpected character.")
 	}
@@ -114,4 +122,11 @@ func (s *Scanner) match(expected string) bool {
 
 	s.current++
 	return true
+}
+
+func (s *Scanner) peek() string {
+	if s.isAtEnd() {
+		return "\x00"
+	}
+	return string(s.source[s.current])
 }
