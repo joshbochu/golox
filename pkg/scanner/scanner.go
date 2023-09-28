@@ -83,6 +83,7 @@ func (s *Scanner) scanToken() {
 			s.addToken(token.GREATER)
 		}
 	case "/":
+		// nextIsNonNewLine && nextInRange
 		for s.peek() != "\n" && !s.isAtEnd() {
 			s.advance()
 		}
@@ -90,8 +91,14 @@ func (s *Scanner) scanToken() {
 		s.line++
 	case " ", "\t", "\r":
 		// Ignore whitespace
+	case "\"":
+		s.string()
 	default:
-		util.Error(s.line, "Unexpected character.")
+		if isDigit(c) {
+			s.number()
+		} else {
+			util.Error(s.line, "Unexpected character.")
+		}
 	}
 }
 
@@ -129,4 +136,33 @@ func (s *Scanner) peek() string {
 		return "\x00"
 	}
 	return string(s.source[s.current])
+}
+
+func (s *Scanner) string() {
+	// nextIsNonTerminal && nextInRange
+	for s.peek() != "\"" && !s.isAtEnd() {
+		// nextIsNewLine
+		if s.peek() == "\n" {
+			s.line++
+		}
+		s.advance()
+	}
+
+	if s.isAtEnd() {
+		util.Error(s.line, "Unterminated string")
+	}
+
+	// is terminal quote character "
+	s.advance()
+
+	stringLiteral := s.source[s.start+1 : s.current-1]
+	s.addTokenWithLiteral(token.STRING, stringLiteral)
+}
+
+func isDigit(c string) bool {
+	return "0" >= c && c <= "9"
+}
+
+func (s *Scanner) number() {
+	// TODO
 }
