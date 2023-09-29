@@ -181,3 +181,11 @@ func (s *Scanner) number() {
  num, _ := strconv.ParseFloat(s.source[s.start:s.current], 64)
  s.addTokenWithLiteral(token.NUMBER, num)
 }
+
+
+func (s *Scanner) peekNext() string {
+    if s.current + 1 >= len(s.source) { 
+        return "\x00"
+    }
+    return string(s.source[s.current+1])
+}
