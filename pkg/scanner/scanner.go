@@ -3,6 +3,7 @@ package scanner
 import (
 	"github.com/joshbochu/lox-go/pkg/token"
 	"github.com/joshbochu/lox-go/pkg/util"
+ "strconv"
 )
 
 type Scanner struct {
@@ -164,5 +165,19 @@ func isDigit(c string) bool {
 }
 
 func (s *Scanner) number() {
-	// TODO
+	for s.isDigit(s.peek()) {
+				s.advance()
+			}
+
+ if s.peek() == "." {
+    // skip .
+    s.advance()
+
+    for s.isDigit(s.peek()) {
+      s.advance()
+    }
+ }
+
+ num, _ := strconv.ParseFloat(s.source[s.start:s.current], 64)
+ s.addTokenWithLiteral(token.NUMBER, num)
 }
