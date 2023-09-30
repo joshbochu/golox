@@ -99,7 +99,7 @@ func (s *Scanner) scanToken() {
 		if isDigit(c) {
 			s.number()
 		} else if isAlpha(c) {
-			numeric()
+			s.identififer()
 		} else {
 			util.Error(s.line, "Unexpected character.")
 		}
