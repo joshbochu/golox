@@ -1,9 +1,10 @@
 package scanner
 
 import (
+	"strconv"
+
 	"github.com/joshbochu/lox-go/pkg/token"
 	"github.com/joshbochu/lox-go/pkg/util"
- "strconv"
 )
 
 type Scanner struct {
@@ -97,6 +98,8 @@ func (s *Scanner) scanToken() {
 	default:
 		if isDigit(c) {
 			s.number()
+		} else if isAlpha(c) {
+			numeric()
 		} else {
 			util.Error(s.line, "Unexpected character.")
 		}
@@ -165,27 +168,45 @@ func isDigit(c string) bool {
 }
 
 func (s *Scanner) number() {
-	for s.isDigit(s.peek()) {
-				s.advance()
-			}
+	for isDigit(s.peek()) {
+		s.advance()
+	}
 
- if s.peek() == "." {
-    // skip .
-    s.advance()
+	if s.peek() == "." {
+		// skip .
+		s.advance()
 
-    for s.isDigit(s.peek()) {
-      s.advance()
-    }
- }
+		for isDigit(s.peek()) {
+			s.advance()
+		}
+	}
 
- num, _ := strconv.ParseFloat(s.source[s.start:s.current], 64)
- s.addTokenWithLiteral(token.NUMBER, num)
+	num, _ := strconv.ParseFloat(s.source[s.start:s.current], 64)
+	s.addTokenWithLiteral(token.NUMBER, num)
 }
 
-
 func (s *Scanner) peekNext() string {
-    if s.current + 1 >= len(s.source) { 
-        return "\x00"
-    }
-    return string(s.source[s.current+1])
+	if s.current+1 >= len(s.source) {
+		return "\x00"
+	}
+	return string(s.source[s.current+1])
+}
+
+func isAlpha(c string) bool {
+	isLower := 'a' <= c[0] && c[0] <= 'z'
+	isUpper := 'A' <= c[0] && c[0] <= 'Z'
+	isUnderScore := c[0] == '_'
+	return isLower || isUpper || isUnderScore
+}
+
+func isAlphaNumeric(c string) bool {
+	return isAlpha(c) || isDigit(c)
+}
+
+func (s *Scanner) identififer() {
+	for isAlphaNumeric(s.peek()) {
+		s.advance()
+	}
+
+	s.addToken(token.IDENTIFIER)
 }
