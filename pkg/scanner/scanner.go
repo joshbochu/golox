@@ -8,20 +8,41 @@ import (
 )
 
 type Scanner struct {
-	source  string
-	tokens  []token.Token
-	start   int
-	current int
-	line    int
+	source   string
+	tokens   []token.Token
+	start    int
+	current  int
+	line     int
+	keywords map[string]token.TokenType
 }
 
 func NewScanner(source string) *Scanner {
+	keywords := map[string]token.TokenType{
+		"and":    token.AND,
+		"class":  token.CLASS,
+		"else":   token.ELSE,
+		"false":  token.FALSE,
+		"for":    token.FOR,
+		"fun":    token.FUN,
+		"if":     token.IF,
+		"nil":    token.NIL,
+		"or":     token.OR,
+		"print":  token.PRINT,
+		"return": token.RETURN,
+		"super":  token.SUPER,
+		"this":   token.THIS,
+		"true":   token.TRUE,
+		"var":    token.VAR,
+		"while":  token.WHILE,
+	}
+
 	return &Scanner{
-		source:  source,
-		tokens:  make([]token.Token, 0),
-		start:   0,
-		current: 0,
-		line:    1,
+		source:   source,
+		tokens:   make([]token.Token, 0),
+		start:    0,
+		current:  0,
+		line:     1,
+		keywords: keywords,
 	}
 }
 
@@ -208,5 +229,12 @@ func (s *Scanner) identififer() {
 		s.advance()
 	}
 
-	s.addToken(token.IDENTIFIER)
+	lexeme := s.source[s.start:s.current]
+	tokenType, isKeyword := s.keywords[lexeme]
+
+	if isKeyword {
+		s.addToken(tokenType)
+	} else {
+		s.addToken(token.IDENTIFIER)
+	}
 }
