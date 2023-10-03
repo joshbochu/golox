@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joshbochu/lox-go/pkg/scanner"
-	"github.com/joshbochu/lox-go/pkg/util"
+	"github.com/joshbochu/lox-go/scanner"
+	"github.com/joshbochu/lox-go/util"
 )
 
 func main() {

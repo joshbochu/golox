@@ -3,8 +3,8 @@ package scanner
 import (
 	"strconv"
 
-	"github.com/joshbochu/lox-go/pkg/token"
-	"github.com/joshbochu/lox-go/pkg/util"
+	"github.com/joshbochu/lox-go/token"
+	"github.com/joshbochu/lox-go/util"
 )
 
 type Scanner struct {
