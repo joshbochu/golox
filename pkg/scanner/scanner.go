@@ -193,7 +193,7 @@ func (s *Scanner) number() {
 		s.advance()
 	}
 
-	if s.peek() == "." {
+	if s.peek() == "." && isDigit(s.peekNext()) {
 		// skip .
 		s.advance()
 
