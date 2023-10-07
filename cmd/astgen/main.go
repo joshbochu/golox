@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -38,30 +39,52 @@ func defineAst(outputDir string, baseName string, types []string) error {
 
 	var builder strings.Builder
 
-	// Define package
+	// imports := []string{"fmt", "os", "os/exec", "path/filepath", "strings", "github.com/joshbochu/lox-go/token"}
+	imports := []string{"github.com/joshbochu/lox-go/token"}
 	builder.WriteString("package ast\n")
 	builder.WriteString("import (\n")
-	// TODO add imports
+	for _, pkg := range imports {
+		builder.WriteString(fmt.Sprintf("\t\"%s\"\n", pkg))
+	}
 	builder.WriteString(")\n")
 
 	builder.WriteString(fmt.Sprintf("type %s interface {\n", baseName))
 	// TODO add interface definition
-	builder.WriteString("}\n")
+	builder.WriteString("}\n\n")
 
 	for _, typeDef := range types {
-		builder.WriteString(fmt.Sprintf("type %s%s struct {\n", typeDef, baseName))
 		parts := strings.SplitN(typeDef, ":", 2)
 		if len(parts) != 2 {
 			return fmt.Errorf("invalid type definition %s", typeDef)
 		}
-		name := strings.TrimSpace(parts[0])
-		// fields := strings.TrimSpace(parts[1])
-		builder.WriteString("}\n")
+		typeName := strings.TrimSpace(parts[0])
+		builder.WriteString(fmt.Sprintf("type %s%s struct {\n", typeName, baseName))
+
+		fields := strings.Split(strings.TrimSpace(parts[1]), ",")
+		for _, field := range fields {
+			field := strings.TrimSpace(field)
+			fieldParts := strings.Split(field, " ")
+			fieldType := fieldParts[0]
+			if fieldType == "Token" {
+				fieldType = "token.Token"
+			}
+			if fieldType == "Object" {
+				fieldType = "interface{}"
+			}
+			fieldName := fieldParts[1]
+			builder.WriteString(fmt.Sprintf("\t%s %s\n", fieldName, fieldType))
+		}
+		builder.WriteString("}\n\n")
 	}
 
 	_, err = file.WriteString(builder.String())
 	if err != nil {
 		return fmt.Errorf("failed to write to file: %v", err)
+	}
+
+	cmd := exec.Command("go", "fmt", path)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to format file: %v", err)
 	}
 
 	return nil
