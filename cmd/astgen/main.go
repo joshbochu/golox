@@ -49,7 +49,20 @@ func defineAst(outputDir string, baseName string, types []string) error {
 	builder.WriteString(")\n")
 
 	builder.WriteString(fmt.Sprintf("type %s interface {\n", baseName))
-	// TODO add interface definition
+	builder.WriteString(fmt.Sprintf("\tAccept(visitor %sVisitor) interface{}\n", baseName))
+	builder.WriteString("}\n\n")
+
+	// ExprvVisitor Interface
+	builder.WriteString(fmt.Sprintf("type %sVisitor interface {\n", baseName))
+	for _, typeDef := range types {
+		parts := strings.SplitN(typeDef, ":", 2)
+		if len(parts) != 2 {
+			return fmt.Errorf("invalid type definition %s", typeDef)
+		}
+		typeName := strings.TrimSpace(parts[0])
+		builder.WriteString(fmt.Sprintf("\tVisit%s%s(expr * %s%s) interface{}\n", typeName, baseName, typeName, baseName))
+	}
+
 	builder.WriteString("}\n\n")
 
 	for _, typeDef := range types {
@@ -74,6 +87,9 @@ func defineAst(outputDir string, baseName string, types []string) error {
 			fieldName := fieldParts[1]
 			builder.WriteString(fmt.Sprintf("\t%s %s\n", fieldName, fieldType))
 		}
+		builder.WriteString("}\n\n")
+		builder.WriteString(fmt.Sprintf("func (e *%s%s) Accept(visitor %sVisitor) interface{}{\n", typeName, baseName, baseName))
+		builder.WriteString(fmt.Sprintf("\treturn visitor.Visit%s%s(e)\n", typeName, baseName))
 		builder.WriteString("}\n\n")
 	}
 
