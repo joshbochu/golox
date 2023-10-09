@@ -6,8 +6,8 @@ import (
 )
 
 /* Eval Order
-expression     → equality ;
-equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+✅ expression     → equality ;
+✅ equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term           → factor ( ( "-" | "+" ) factor )* ;
 factor         → unary ( ( "/" | "*" ) unary )* ;
@@ -34,7 +34,13 @@ func expression() expr.Expr {
 }
 
 func equality() expr.Expr {
-	return nil
+	left := comparison()
+	for match(token.BANG_EQUAL, token.EQUAL_EQUAL) {
+		operator := previous()
+		right := comparison()
+		left = &expr.Binary{Left: left, Operator: operator, Right: right}
+	}
+	return left
 }
 
 func comparison() expr.Expr {
@@ -50,7 +56,7 @@ func previous() token.Token {
 	}
 }
 
-func match() bool {
+func match(tokenTypes ...token.TokenType) bool {
 	return false
 }
 
