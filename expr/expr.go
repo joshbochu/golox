@@ -1,4 +1,4 @@
-package ast
+package expr
 
 import (
 	"github.com/joshbochu/lox-go/token"

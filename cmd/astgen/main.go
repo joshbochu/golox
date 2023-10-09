@@ -41,7 +41,7 @@ func defineAst(outputDir string, baseName string, types []string) error {
 
 	// imports := []string{"fmt", "os", "os/exec", "path/filepath", "strings", "github.com/joshbochu/lox-go/token"}
 	imports := []string{"github.com/joshbochu/lox-go/token"}
-	builder.WriteString("package ast\n")
+	builder.WriteString("package expr\n")
 	builder.WriteString("import (\n")
 	for _, pkg := range imports {
 		builder.WriteString(fmt.Sprintf("\t\"%s\"\n", pkg))
