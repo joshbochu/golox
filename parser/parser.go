@@ -53,3 +53,29 @@ func previous() token.Token {
 func match() bool {
 	return false
 }
+
+func check(tokenType token.TokenType) bool {
+	return false
+}
+
+func advance() token.Token {
+	return token.Token{
+		Type:    0,
+		Lexeme:  "",
+		Literal: nil,
+		Line:    0,
+	}
+}
+
+func isAtEnd() bool {
+	return false
+}
+
+func peek() token.Token {
+	return token.Token{
+		Type:    0,
+		Lexeme:  "",
+		Literal: nil,
+		Line:    0,
+	}
+}
