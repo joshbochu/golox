@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/joshbochu/lox-go/expr"
 	"github.com/joshbochu/lox-go/token"
 )
 
@@ -26,4 +27,29 @@ func NewParser(tokens []token.Token) *Parser {
 		current: 0,
 		tokens:  tokens,
 	}
+}
+
+func expression() expr.Expr {
+	return equality()
+}
+
+func equality() expr.Expr {
+	return nil
+}
+
+func comparison() expr.Expr {
+	return nil
+}
+
+func previous() token.Token {
+	return token.Token{
+		Type:    0,
+		Lexeme:  "",
+		Literal: nil,
+		Line:    0,
+	}
+}
+
+func match() bool {
+	return false
 }
