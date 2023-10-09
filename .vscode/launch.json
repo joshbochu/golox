@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch ASTGen",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/astgen",
+            "args": ["${workspaceFolder}/expr/"]
+        },
+        {
+            "name": "Launch Lox",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/lox"
+        },
+        {
+            "name": "Launch Scratch",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/scratch"
+        }
+    ]
+}

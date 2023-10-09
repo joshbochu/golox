@@ -16,10 +16,10 @@ func main() {
 	}
 	outputDir := os.Args[1]
 	err := defineAst(outputDir, "Expr", []string{
-		"Binary   : Expr left, Token operator, Expr right",
-		"Grouping : Expr expression",
-		"Literal  : Object value",
-		"Unary    : Token operator, Expr right",
+		"Binary   : Expr Left, Token Operator, Expr Right",
+		"Grouping : Expr Expression",
+		"Literal  : Object Value",
+		"Unary    : Token Operator, Expr Right",
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating AST definition: %s\n", err)
@@ -60,7 +60,7 @@ func defineAst(outputDir string, baseName string, types []string) error {
 			return fmt.Errorf("invalid type definition %s", typeDef)
 		}
 		typeName := strings.TrimSpace(parts[0])
-		builder.WriteString(fmt.Sprintf("\tVisit%s%s(expr * %s%s) interface{}\n", typeName, baseName, typeName, baseName))
+		builder.WriteString(fmt.Sprintf("\tVisit%s%s(expr * %s) interface{}\n", typeName, baseName, typeName))
 	}
 
 	builder.WriteString("}\n\n")
@@ -71,7 +71,7 @@ func defineAst(outputDir string, baseName string, types []string) error {
 			return fmt.Errorf("invalid type definition %s", typeDef)
 		}
 		typeName := strings.TrimSpace(parts[0])
-		builder.WriteString(fmt.Sprintf("type %s%s struct {\n", typeName, baseName))
+		builder.WriteString(fmt.Sprintf("type %s struct {\n", typeName))
 
 		fields := strings.Split(strings.TrimSpace(parts[1]), ",")
 		for _, field := range fields {
@@ -88,7 +88,7 @@ func defineAst(outputDir string, baseName string, types []string) error {
 			builder.WriteString(fmt.Sprintf("\t%s %s\n", fieldName, fieldType))
 		}
 		builder.WriteString("}\n\n")
-		builder.WriteString(fmt.Sprintf("func (e *%s%s) Accept(visitor %sVisitor) interface{}{\n", typeName, baseName, baseName))
+		builder.WriteString(fmt.Sprintf("func (e *%s) Accept(visitor %sVisitor) interface{}{\n", typeName, baseName))
 		builder.WriteString(fmt.Sprintf("\treturn visitor.Visit%s%s(e)\n", typeName, baseName))
 		builder.WriteString("}\n\n")
 	}

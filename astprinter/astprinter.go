@@ -1,33 +1,34 @@
 package astprinter
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/joshbochu/lox-go/expr"
 )
 
-type AstPrinter struct{}
+type Printer struct{}
 
-func (p *AstPrinter) VisitBinaryExpr(expr *expr.BinaryExpr) interface{} {
+func (p *Printer) VisitBinaryExpr(expr *expr.Binary) interface{} {
 	return p.parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right)
 }
 
-func (p *AstPrinter) VisitGroupingExpr(expr *expr.GroupingExpr) interface{} {
-	return p.parenthesize("grouping", expr, expr.Expression)
+func (p *Printer) VisitGroupingExpr(expr *expr.Grouping) interface{} {
+	return p.parenthesize("grouping", expr.Expression)
 }
 
-func (p *AstPrinter) VisitLiteralExpr(expr *expr.LiteralExpr) interface{} {
+func (p *Printer) VisitLiteralExpr(expr *expr.Literal) interface{} {
 	if expr.Value == nil {
 		return "nil"
 	}
-	return expr.Value
+	return fmt.Sprintf("%v", expr.Value)
 }
 
-func (p *AstPrinter) VisitUnaryExpr(expr *expr.UnaryExpr) interface{} {
+func (p *Printer) VisitUnaryExpr(expr *expr.Unary) interface{} {
 	return p.parenthesize(expr.Operator.Lexeme, expr.Right)
 }
 
-func (p *AstPrinter) parenthesize(name string, exprs ...expr.Expr) string {
+func (p *Printer) parenthesize(name string, exprs ...expr.Expr) string {
 	var builder strings.Builder
 
 	builder.WriteString("(")
