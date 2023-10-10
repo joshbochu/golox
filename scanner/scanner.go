@@ -143,7 +143,7 @@ func (s *Scanner) addTokenWithLiteral(tokenType token.TokenType, literal interfa
 }
 
 func (s *Scanner) match(expected string) bool {
-	if !s.isAtEnd() {
+	if s.isAtEnd() {
 		return false
 	}
 
