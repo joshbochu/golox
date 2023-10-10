@@ -122,7 +122,7 @@ func (s *Scanner) scanToken() {
 		} else if isAlpha(c) {
 			s.identififer()
 		} else {
-			util.Error(s.line, "Unexpected character.")
+			util.ErrorLine(s.line, "Unexpected character.")
 		}
 	}
 }
@@ -174,7 +174,7 @@ func (s *Scanner) string() {
 	}
 
 	if s.isAtEnd() {
-		util.Error(s.line, "Unterminated string")
+		util.ErrorLine(s.line, "Unterminated string")
 	}
 
 	// is terminal quote character "
