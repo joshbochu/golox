@@ -107,9 +107,14 @@ func (s *Scanner) scanToken() {
 		}
 	case "/":
 		// nextIsNonNewLine && nextInRange
-		for s.peek() != "\n" && !s.isAtEnd() {
-			s.advance()
+		if s.match(("/")) {
+			for s.peek() != "\n" && !s.isAtEnd() {
+				s.advance()
+			}
+		} else {
+			s.addToken(token.SLASH)
 		}
+
 	case "\n":
 		s.line++
 	case " ", "\t", "\r":
@@ -185,7 +190,7 @@ func (s *Scanner) string() {
 }
 
 func isDigit(c string) bool {
-	return "0" >= c && c <= "9"
+	return c >= "0" && c <= "9"
 }
 
 func (s *Scanner) number() {
