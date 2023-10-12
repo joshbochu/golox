@@ -204,7 +204,6 @@ func (p *Parser) previous() token.Token {
 	return p.tokens[p.current-1]
 }
 
-// revisit later
 func (p *Parser) synchronize() {
 	p.advance()
 
