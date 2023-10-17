@@ -67,6 +67,6 @@ func run(source string) {
 	printer := &astprinter.Printer{}
 	fmt.Println(expression.Accept(printer))
 
-	interpreter := &interpreter.Interpreter{}
+	interpreter := interpreter.NewInterpreter()
 	interpreter.Interpret(expression)
 }

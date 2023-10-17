@@ -22,6 +22,10 @@ func (e *RuntimeError) Error() string {
 
 type Interpreter struct{}
 
+func NewInterpreter() *Interpreter {
+	return &Interpreter{}
+}
+
 func (i *Interpreter) Interpret(expr expr.Expr) {
 	val, err := i.evaluate(expr)
 	if err != nil {
