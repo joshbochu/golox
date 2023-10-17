@@ -40,7 +40,7 @@ func (i *Interpreter) evaluate(expr expr.Expr) (interface{}, error) {
 }
 
 func (i *Interpreter) VisitLiteralExpr(expr *expr.Literal) (interface{}, error) {
-	return expr.Value
+	return expr.Value, nil
 }
 
 func (i *Interpreter) VisitGroupingExpr(expr *expr.Grouping) (interface{}, error) {
@@ -48,8 +48,15 @@ func (i *Interpreter) VisitGroupingExpr(expr *expr.Grouping) (interface{}, error
 }
 
 func (i *Interpreter) VisitBinaryExpr(expr *expr.Binary) (interface{}, error) {
-	leftObj := i.evaluate(expr.Left)
-	rightObj := i.evaluate(expr.Right)
+	leftObj, leftErr := i.evaluate(expr.Left)
+	if leftErr != nil {
+		return nil, leftErr
+	}
+
+	rightObj, rightErr := i.evaluate(expr.Right)
+	if rightErr != nil {
+		return nil, rightErr
+	}
 
 	switch expr.Operator.Type {
 	case token.BANG_EQUAL:
