@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joshbochu/lox-go/astprinter"
-	"github.com/joshbochu/lox-go/interpreter"
-	"github.com/joshbochu/lox-go/loxerror"
-	"github.com/joshbochu/lox-go/parser"
-	"github.com/joshbochu/lox-go/scanner"
+	"github.com/joshbochu/golox/astprinter"
+	"github.com/joshbochu/golox/interpreter"
+	"github.com/joshbochu/golox/loxerror"
+	"github.com/joshbochu/golox/parser"
+	"github.com/joshbochu/golox/scanner"
 )
 
 func main() {

@@ -3,9 +3,9 @@ package main // to test stuff
 import (
 	"fmt"
 
-	"github.com/joshbochu/lox-go/astprinter"
-	"github.com/joshbochu/lox-go/expr"
-	"github.com/joshbochu/lox-go/token"
+	"github.com/joshbochu/golox/astprinter"
+	"github.com/joshbochu/golox/expr"
+	"github.com/joshbochu/golox/token"
 )
 
 func main() {

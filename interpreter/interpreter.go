@@ -3,8 +3,8 @@ package interpreter
 import (
 	"fmt"
 
-	"github.com/joshbochu/lox-go/expr"
-	"github.com/joshbochu/lox-go/token"
+	"github.com/joshbochu/golox/expr"
+	"github.com/joshbochu/golox/token"
 )
 
 type RuntimeError struct {

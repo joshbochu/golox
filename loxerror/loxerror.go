@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joshbochu/lox-go/interpreter"
-	"github.com/joshbochu/lox-go/token"
+	"github.com/joshbochu/golox/interpreter"
+	"github.com/joshbochu/golox/token"
 )
 
 // LoxError is the global instance of the ErrorHandler.

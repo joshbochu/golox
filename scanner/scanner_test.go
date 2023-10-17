@@ -3,7 +3,7 @@ package scanner
 import (
 	"testing"
 
-	"github.com/joshbochu/lox-go/token"
+	"github.com/joshbochu/golox/token"
 )
 
 func TestScanner_ScanTokens(t *testing.T) {

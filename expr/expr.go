@@ -1,7 +1,7 @@
 package expr
 
 import (
-	"github.com/joshbochu/lox-go/token"
+	"github.com/joshbochu/golox/token"
 )
 
 type Expr interface {

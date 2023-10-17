@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/joshbochu/lox-go/expr"
-	"github.com/joshbochu/lox-go/scanner"
-	"github.com/joshbochu/lox-go/token"
+	"github.com/joshbochu/golox/expr"
+	"github.com/joshbochu/golox/scanner"
+	"github.com/joshbochu/golox/token"
 )
 
 func TestParser(t *testing.T) {

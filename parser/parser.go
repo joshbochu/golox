@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"github.com/joshbochu/lox-go/expr"
-	"github.com/joshbochu/lox-go/loxerror"
-	"github.com/joshbochu/lox-go/token"
+	"github.com/joshbochu/golox/expr"
+	"github.com/joshbochu/golox/loxerror"
+	"github.com/joshbochu/golox/token"
 )
 
 type ParseError struct {

@@ -1,2 +1,3 @@
-# lox-go
+# golox
+
 Crafting Interpreters in Go

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/joshbochu/lox-go/expr"
+	"github.com/joshbochu/golox/expr"
 )
 
 type Printer struct{}
