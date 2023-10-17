@@ -3,8 +3,8 @@ package scanner
 import (
 	"strconv"
 
+	"github.com/joshbochu/lox-go/loxerror"
 	"github.com/joshbochu/lox-go/token"
-	"github.com/joshbochu/lox-go/util"
 )
 
 type Scanner struct {
@@ -127,7 +127,7 @@ func (s *Scanner) scanToken() {
 		} else if isAlpha(c) {
 			s.identififer()
 		} else {
-			util.ErrorLine(s.line, "Unexpected character.")
+			loxerror.ErrorLine(s.line, "Unexpected character.")
 		}
 	}
 }
@@ -179,7 +179,7 @@ func (s *Scanner) string() {
 	}
 
 	if s.isAtEnd() {
-		util.ErrorLine(s.line, "Unterminated string")
+		loxerror.ErrorLine(s.line, "Unterminated string")
 	}
 
 	// is terminal quote character "

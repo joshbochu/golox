@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"github.com/joshbochu/lox-go/astprinter"
+	"github.com/joshbochu/lox-go/loxerror"
 	"github.com/joshbochu/lox-go/parser"
 	"github.com/joshbochu/lox-go/scanner"
-	"github.com/joshbochu/lox-go/util"
 )
 
 func main() {
@@ -31,7 +31,7 @@ func runFile(path string) {
 	}
 	source := string(bytes)
 	run(source)
-	if util.GetHadError() {
+	if loxerror.LoxError.HadError {
 		os.Exit(65)
 	}
 }
@@ -45,8 +45,8 @@ func runPrompt() {
 		}
 		line := scanner.Text()
 		run(line)
-		if util.GetHadError() {
-			util.SetHadError(false)
+		if loxerror.LoxError.HadError {
+			loxerror.LoxError.HadError = false
 		}
 		fmt.Print("> ")
 	}
@@ -60,7 +60,7 @@ func run(source string) {
 	tokens := scanner.ScanTokens()
 	parser := parser.NewParser(tokens)
 	expression, err := parser.Parse()
-	if err != nil && util.GetHadError() {
+	if err != nil && loxerror.LoxError.HadError {
 		return
 	}
 	printer := &astprinter.Printer{}

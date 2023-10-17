@@ -8,16 +8,16 @@ import (
 )
 
 type RuntimeError struct {
-	token   token.Token
-	message string
+	Token   token.Token
+	Message string
 }
 
 func NewRuntimeError(token token.Token, message string) *RuntimeError {
-	return &RuntimeError{token: token, message: message}
+	return &RuntimeError{Token: token, Message: message}
 }
 
 func (e *RuntimeError) Error() string {
-	return e.message
+	return e.Message
 }
 
 type Interpreter struct{}

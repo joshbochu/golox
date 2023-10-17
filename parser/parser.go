@@ -2,8 +2,8 @@ package parser
 
 import (
 	"github.com/joshbochu/lox-go/expr"
+	"github.com/joshbochu/lox-go/loxerror"
 	"github.com/joshbochu/lox-go/token"
-	"github.com/joshbochu/lox-go/util"
 )
 
 type ParseError struct {
@@ -164,7 +164,7 @@ func (p *Parser) consume(tokenType token.TokenType, messsage string) (token.Toke
 }
 
 func (p *Parser) error(token token.Token, message string) error {
-	util.ErrorToken(token, message)
+	loxerror.ErrorToken(token, message)
 	return NewParseError(message)
 }
 
