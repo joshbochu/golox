@@ -32,7 +32,19 @@ func (i *Interpreter) Interpret(expr expr.Expr) {
 
 // TODO
 func stringify(object interface{}) string {
-	return ""
+	if object == nil {
+		return "nil"
+	}
+
+	switch v := object.(type) {
+	case float64:
+		txt := fmt.Sprintf("%f", v)
+		if txt[len(txt)-2:] == ".0" {
+			return txt[:len(txt)-2]
+		}
+	}
+
+	return fmt.Sprintf("%v", object)
 }
 
 func (i *Interpreter) evaluate(expr expr.Expr) (interface{}, error) {
