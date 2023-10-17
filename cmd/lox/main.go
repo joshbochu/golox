@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joshbochu/lox-go/astprinter"
+	"github.com/joshbochu/lox-go/interpreter"
 	"github.com/joshbochu/lox-go/loxerror"
 	"github.com/joshbochu/lox-go/parser"
 	"github.com/joshbochu/lox-go/scanner"
@@ -65,4 +66,7 @@ func run(source string) {
 	}
 	printer := &astprinter.Printer{}
 	fmt.Println(expression.Accept(printer))
+
+	interpreter := &interpreter.Interpreter{}
+	interpreter.Interpret(expression)
 }

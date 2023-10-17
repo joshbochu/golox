@@ -9,7 +9,7 @@ import (
 )
 
 // LoxError is the global instance of the ErrorHandler.
-var LoxError = &ErrorHandler{}
+var LoxError = &ErrorHandler{HadError: false, HadRuntimeError: false}
 
 type ErrorHandler struct {
 	HadError        bool
