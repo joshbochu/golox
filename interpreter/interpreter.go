@@ -1,11 +1,22 @@
 package interpreter
 
 import (
-	"fmt"
-
 	"github.com/joshbochu/lox-go/expr"
 	"github.com/joshbochu/lox-go/token"
 )
+
+type RuntimeError struct {
+	token   token.Token
+	message string
+}
+
+func NewRuntimeError(token token.Token, message string) *RuntimeError {
+	return &RuntimeError{token: token, message: message}
+}
+
+func (e *RuntimeError) Error() string {
+	return e.message
+}
 
 type Interpreter struct{}
 
@@ -21,58 +32,91 @@ func (i *Interpreter) VisitGroupingExpr(expr *expr.Grouping) interface{} {
 	return i.evaluate(expr.Expression)
 }
 
-func (i *Interpreter) VisitBinaryExpr(expr *expr.Binary) interface{} {
+func (i *Interpreter) VisitBinaryExpr(expr *expr.Binary) (interface{}, error) {
 	leftObj := i.evaluate(expr.Left)
 	rightObj := i.evaluate(expr.Right)
 
 	switch expr.Operator.Type {
 	case token.BANG_EQUAL:
-		return !isEqual(leftObj, rightObj)
+		return !isEqual(leftObj, rightObj), nil
 	case token.EQUAL_EQUAL:
-		return isEqual(leftObj, rightObj)
-	case token.GREATER, token.GREATER_EQUAL, token.LESS, token.LESS_EQUAL, token.MINUS, token.SLASH, token.STAR:
-		left, leftOk := leftObj.(float64)
-		right, rightOk := rightObj.(float64)
-
-		if !leftOk || !rightOk {
-			panic(fmt.Sprintf("Expected float64 operands but got (%T, %T).", leftObj, rightObj))
+		return isEqual(leftObj, rightObj), nil
+	case token.GREATER:
+		left, right, err := checkNumberOperands(expr.Operator, leftObj, rightObj)
+		if err != nil {
+			return nil, err
 		}
-
-		switch expr.Operator.Type {
-		case token.GREATER:
-			return left > right
-		case token.GREATER_EQUAL:
-			return left >= right
-		case token.LESS:
-			return left < right
-		case token.LESS_EQUAL:
-			return left <= right
-		case token.MINUS:
-			return left - right
-		case token.SLASH:
-			return left / right
-		case token.STAR:
-			return left * right
+		return left > right, nil
+	case token.GREATER_EQUAL:
+		left, right, err := checkNumberOperands(expr.Operator, leftObj, rightObj)
+		if err != nil {
+			return nil, err
 		}
+		return left >= right, nil
+	case token.LESS:
+		left, right, err := checkNumberOperands(expr.Operator, leftObj, rightObj)
+		if err != nil {
+			return nil, err
+		}
+		return left < right, nil
+	case token.LESS_EQUAL:
+		left, right, err := checkNumberOperands(expr.Operator, leftObj, rightObj)
+		if err != nil {
+			return nil, err
+		}
+		return left <= right, nil
+	case token.MINUS:
+		left, right, err := checkNumberOperands(expr.Operator, leftObj, rightObj)
+		if err != nil {
+			return nil, err
+		}
+		return left - right, nil
+	case token.SLASH:
+		left, right, err := checkNumberOperands(expr.Operator, leftObj, rightObj)
+		if err != nil {
+			return nil, err
+		}
+		return left / right, nil
+	case token.STAR:
+		left, right, err := checkNumberOperands(expr.Operator, leftObj, rightObj)
+		if err != nil {
+			return nil, err
+		}
+		return left * right, nil
 	case token.PLUS:
-		leftNum, leftIsNum := leftObj.(float64)
-		rightNum, rightIsNum := rightObj.(float64)
-		if leftIsNum && rightIsNum {
-			return leftNum + rightNum
+		left, right, err := checkNumberOperands(expr.Operator, leftObj, rightObj)
+		if err == nil {
+			return left + right, nil
 		}
 
-		leftStr, leftIsStr := leftObj.(string)
-		rightStr, rightIsStr := rightObj.(string)
-		if leftIsStr && rightIsStr {
-			return leftStr + rightStr
+		leftStr, leftStrOk := leftObj.(string)
+		rightStr, rightStrOk := rightObj.(string)
+		if leftStrOk && rightStrOk {
+			return leftStr + rightStr, nil
 		}
 
-		panic("Unsupported types for + operator.")
-	default:
-		panic(fmt.Sprintf("Unexpected token type: %v.", expr.Operator.Type))
+		return nil, NewRuntimeError(expr.Operator, "operands must be two numbers or two strings for + operator.")
 	}
 
-	return nil
+	return nil, nil
+}
+
+func checkNumberOperand(operator token.Token, operand interface{}) (float64, error) {
+	num, ok := operand.(float64)
+	if !ok {
+		return 0.0, NewRuntimeError(operator, "operand must be a number")
+	}
+	return num, nil
+}
+
+func checkNumberOperands(operator token.Token, leftOperand interface{}, rightOperand interface{}) (float64, float64, error) {
+	leftNum, leftOk := leftOperand.(float64)
+	rightNum, rightOk := rightOperand.(float64)
+	if !(leftOk && rightOk) {
+		return 0.0, 0.0, NewRuntimeError(operator, "operands must be numbers")
+	}
+	return leftNum, rightNum, nil
+
 }
 
 func isEqual(leftObj interface{}, rightObj interface{}) bool {
@@ -85,20 +129,20 @@ func isEqual(leftObj interface{}, rightObj interface{}) bool {
 	return leftObj == rightObj
 }
 
-func (i *Interpreter) VisitUnaryExpr(expr *expr.Unary) interface{} {
+func (i *Interpreter) VisitUnaryExpr(expr *expr.Unary) (interface{}, error) {
 	rightObj := i.evaluate(expr.Right)
 	switch expr.Operator.Type {
 	case token.BANG:
-		return !isTruthy(rightObj)
+		return !isTruthy(rightObj), nil
 	case token.MINUS:
-		num, ok := rightObj.(float64)
-		if !ok {
-			panic(fmt.Sprintf("Expected float64 operand but got %T", rightObj))
+		num, err := checkNumberOperand(expr.Operator, rightObj)
+		if err != nil {
+			return nil, err
 		}
-		return -num
+		return -num, nil
 	}
 	// unreachable
-	return nil
+	return nil, nil
 }
 
 func isTruthy(object interface{}) bool {
