@@ -5,14 +5,14 @@ import (
 )
 
 type Expr interface {
-	Accept(visitor ExprVisitor) interface{}
+	Accept(visitor ExprVisitor) (interface{}, error)
 }
 
 type ExprVisitor interface {
-	VisitBinaryExpr(expr *Binary) interface{}
-	VisitGroupingExpr(expr *Grouping) interface{}
-	VisitLiteralExpr(expr *Literal) interface{}
-	VisitUnaryExpr(expr *Unary) interface{}
+	VisitBinaryExpr(expr *Binary) (interface{}, error)
+	VisitGroupingExpr(expr *Grouping) (interface{}, error)
+	VisitLiteralExpr(expr *Literal) (interface{}, error)
+	VisitUnaryExpr(expr *Unary) (interface{}, error)
 }
 
 type Binary struct {
@@ -21,24 +21,36 @@ type Binary struct {
 	Right    Expr
 }
 
-func (e *Binary) Accept(visitor ExprVisitor) interface{} {
-	return visitor.VisitBinaryExpr(e)
+func (e *Binary) Accept(visitor ExprVisitor) (interface{}, error) {
+	val, err := visitor.VisitBinaryExpr(e)
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
 }
 
 type Grouping struct {
 	Expression Expr
 }
 
-func (e *Grouping) Accept(visitor ExprVisitor) interface{} {
-	return visitor.VisitGroupingExpr(e)
+func (e *Grouping) Accept(visitor ExprVisitor) (interface{}, error) {
+	val, err := visitor.VisitGroupingExpr(e)
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
 }
 
 type Literal struct {
 	Value interface{}
 }
 
-func (e *Literal) Accept(visitor ExprVisitor) interface{} {
-	return visitor.VisitLiteralExpr(e)
+func (e *Literal) Accept(visitor ExprVisitor) (interface{}, error) {
+	val, err := visitor.VisitLiteralExpr(e)
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
 }
 
 type Unary struct {
@@ -46,6 +58,10 @@ type Unary struct {
 	Right    Expr
 }
 
-func (e *Unary) Accept(visitor ExprVisitor) interface{} {
-	return visitor.VisitUnaryExpr(e)
+func (e *Unary) Accept(visitor ExprVisitor) (interface{}, error) {
+	val, err := visitor.VisitUnaryExpr(e)
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
 }

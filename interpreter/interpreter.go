@@ -1,6 +1,8 @@
 package interpreter
 
 import (
+	"fmt"
+
 	"github.com/joshbochu/lox-go/expr"
 	"github.com/joshbochu/lox-go/token"
 )
@@ -20,15 +22,28 @@ func (e *RuntimeError) Error() string {
 
 type Interpreter struct{}
 
-func (i *Interpreter) evaluate(expr expr.Expr) interface{} {
+func (i *Interpreter) Interpret(expr expr.Expr) {
+	val, err := i.evaluate(expr)
+	if err != nil {
+		// reportruntimeerror
+	}
+	fmt.Println(stringify(val))
+}
+
+// TODO
+func stringify(object interface{}) string {
+	return ""
+}
+
+func (i *Interpreter) evaluate(expr expr.Expr) (interface{}, error) {
 	return expr.Accept(i)
 }
 
-func (i *Interpreter) VisitLiteralExpr(expr *expr.Literal) interface{} {
+func (i *Interpreter) VisitLiteralExpr(expr *expr.Literal) (interface{}, error) {
 	return expr.Value
 }
 
-func (i *Interpreter) VisitGroupingExpr(expr *expr.Grouping) interface{} {
+func (i *Interpreter) VisitGroupingExpr(expr *expr.Grouping) (interface{}, error) {
 	return i.evaluate(expr.Expression)
 }
 
@@ -101,6 +116,22 @@ func (i *Interpreter) VisitBinaryExpr(expr *expr.Binary) (interface{}, error) {
 	return nil, nil
 }
 
+func (i *Interpreter) VisitUnaryExpr(expr *expr.Unary) (interface{}, error) {
+	rightObj, _ := i.evaluate(expr.Right)
+	switch expr.Operator.Type {
+	case token.BANG:
+		return !isTruthy(rightObj), nil
+	case token.MINUS:
+		num, err := checkNumberOperand(expr.Operator, rightObj)
+		if err != nil {
+			return nil, err
+		}
+		return -num, nil
+	}
+	// unreachable
+	return nil, nil
+}
+
 func checkNumberOperand(operator token.Token, operand interface{}) (float64, error) {
 	num, ok := operand.(float64)
 	if !ok {
@@ -127,22 +158,6 @@ func isEqual(leftObj interface{}, rightObj interface{}) bool {
 		return false
 	}
 	return leftObj == rightObj
-}
-
-func (i *Interpreter) VisitUnaryExpr(expr *expr.Unary) (interface{}, error) {
-	rightObj := i.evaluate(expr.Right)
-	switch expr.Operator.Type {
-	case token.BANG:
-		return !isTruthy(rightObj), nil
-	case token.MINUS:
-		num, err := checkNumberOperand(expr.Operator, rightObj)
-		if err != nil {
-			return nil, err
-		}
-		return -num, nil
-	}
-	// unreachable
-	return nil, nil
 }
 
 func isTruthy(object interface{}) bool {
