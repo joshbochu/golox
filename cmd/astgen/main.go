@@ -21,6 +21,10 @@ func main() {
 		"Literal  : Object Value",
 		"Unary    : Token Operator, Expr Right",
 	})
+	defineAst(outputDir, "Stmt", []string{
+		"Expression : Expr expression",
+		"Print : Expr expression",
+	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating AST definition: %s\n", err)
 		os.Exit(1)
