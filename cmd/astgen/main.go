@@ -39,7 +39,6 @@ func defineAst(outputDir string, baseName string, types []string) error {
 
 	var builder strings.Builder
 
-	// imports := []string{"fmt", "os", "os/exec", "path/filepath", "strings", "github.com/joshbochu/golox/token"}
 	imports := []string{"github.com/joshbochu/golox/token"}
 	builder.WriteString("package expr\n")
 	builder.WriteString("import (\n")
