@@ -1,26 +1,34 @@
 package expr
 
 type Stmt interface {
-	Accept(visitor StmtVisitor) interface{}
+	Accept(visitor StmtVisitor) (interface{}, error)
 }
 
 type StmtVisitor interface {
-	VisitExpressionStmt(expr *Expression) interface{}
-	VisitPrintStmt(expr *Print) interface{}
+	VisitExpressionStmt(expr *Expression) (interface{}, error)
+	VisitPrintStmt(expr *Print) (interface{}, error)
 }
 
 type Expression struct {
 	expression Expr
 }
 
-func (e *Expression) Accept(visitor StmtVisitor) interface{} {
-	return visitor.VisitExpressionStmt(e)
+func (e *Expression) Accept(visitor StmtVisitor) (interface{}, error) {
+	val, err := visitor.VisitExpressionStmt(e)
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
 }
 
 type Print struct {
 	expression Expr
 }
 
-func (e *Print) Accept(visitor StmtVisitor) interface{} {
-	return visitor.VisitPrintStmt(e)
+func (e *Print) Accept(visitor StmtVisitor) (interface{}, error) {
+	val, err := visitor.VisitPrintStmt(e)
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
 }

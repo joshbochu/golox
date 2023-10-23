@@ -44,7 +44,11 @@ func defineAst(outputDir string, baseName string, types []string) error {
 	var builder strings.Builder
 
 	imports := []string{"github.com/joshbochu/golox/token"}
-	builder.WriteString("package expr\n")
+
+	// Extract package name from the directory's base name
+	packageName := filepath.Base(outputDir)
+	builder.WriteString(fmt.Sprintf("package %s\n", packageName))
+
 	builder.WriteString("import (\n")
 	for _, pkg := range imports {
 		builder.WriteString(fmt.Sprintf("\t\"%s\"\n", pkg))
@@ -52,10 +56,10 @@ func defineAst(outputDir string, baseName string, types []string) error {
 	builder.WriteString(")\n")
 
 	builder.WriteString(fmt.Sprintf("type %s interface {\n", baseName))
-	builder.WriteString(fmt.Sprintf("\tAccept(visitor %sVisitor) interface{}\n", baseName))
+	builder.WriteString(fmt.Sprintf("\tAccept(visitor %sVisitor) (interface{}, error)\n", baseName))
 	builder.WriteString("}\n\n")
 
-	// ExprvVisitor Interface
+	// ExprVisitor Interface
 	builder.WriteString(fmt.Sprintf("type %sVisitor interface {\n", baseName))
 	for _, typeDef := range types {
 		parts := strings.SplitN(typeDef, ":", 2)
@@ -63,7 +67,7 @@ func defineAst(outputDir string, baseName string, types []string) error {
 			return fmt.Errorf("invalid type definition %s", typeDef)
 		}
 		typeName := strings.TrimSpace(parts[0])
-		builder.WriteString(fmt.Sprintf("\tVisit%s%s(expr * %s) interface{}\n", typeName, baseName, typeName))
+		builder.WriteString(fmt.Sprintf("\tVisit%s%s(expr * %s) (interface{}, error)\n", typeName, baseName, typeName))
 	}
 
 	builder.WriteString("}\n\n")
@@ -78,7 +82,7 @@ func defineAst(outputDir string, baseName string, types []string) error {
 
 		fields := strings.Split(strings.TrimSpace(parts[1]), ",")
 		for _, field := range fields {
-			field := strings.TrimSpace(field)
+			field = strings.TrimSpace(field)
 			fieldParts := strings.Split(field, " ")
 			fieldType := fieldParts[0]
 			if fieldType == "Token" {
@@ -91,11 +95,12 @@ func defineAst(outputDir string, baseName string, types []string) error {
 			builder.WriteString(fmt.Sprintf("\t%s %s\n", fieldName, fieldType))
 		}
 		builder.WriteString("}\n\n")
-		builder.WriteString(fmt.Sprintf("func (e *%s) Accept(visitor %sVisitor) interface{}{\n", typeName, baseName))
-		builder.WriteString(fmt.Sprintf("\treturn visitor.Visit%s%s(e)\n", typeName, baseName))
+		builder.WriteString(fmt.Sprintf("func (e *%s) Accept(visitor %sVisitor) (interface{}, error){\n", typeName, baseName))
+		builder.WriteString(fmt.Sprintf("\tval, err := visitor.Visit%s%s(e)\n", typeName, baseName))
+		builder.WriteString("\tif err != nil {\n\t\treturn nil, err\n\t}\n")
+		builder.WriteString("\treturn val, nil\n")
 		builder.WriteString("}\n\n")
 	}
-
 	_, err = file.WriteString(builder.String())
 	if err != nil {
 		return fmt.Errorf("failed to write to file: %v", err)
