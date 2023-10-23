@@ -16,14 +16,14 @@ func main() {
 	}
 	outputDir := os.Args[1]
 	err := defineAst(outputDir, "Expr", []string{
-		"Binary   : Expr Left, Token Operator, Expr Right",
+		"Binary   : Expr Left, token.Token Operator, Expr Right",
 		"Grouping : Expr Expression",
 		"Literal  : Object Value",
-		"Unary    : Token Operator, Expr Right",
+		"Unary    : token.Token Operator, Expr Right",
 	})
 	defineAst(outputDir, "Stmt", []string{
-		"Expression : Expr expression",
-		"Print : Expr expression",
+		"Expression : expr.Expr expression",
+		"Print : expr.Expr expression",
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating AST definition: %s\n", err)
@@ -32,9 +32,15 @@ func main() {
 	fmt.Printf("AST definition generated successfully to directory %s\n", outputDir)
 }
 
-func defineAst(outputDir string, baseName string, types []string) error {
+func defineAst(baseOutputDir string, baseName string, types []string) error {
+	// Create directory for the file (e.g., "expr" or "stmt")
+	dirPath := filepath.Join(baseOutputDir, strings.ToLower(baseName))
+	if err := os.MkdirAll(dirPath, 0755); err != nil {
+		return fmt.Errorf("failed to create directory: %v", err)
+	}
+
 	// Create file
-	path := filepath.Join(outputDir, strings.ToLower(baseName)+".go")
+	path := filepath.Join(dirPath, strings.ToLower(baseName)+".go")
 	file, err := os.Create(path)
 	if err != nil {
 		return fmt.Errorf("failed to create file: %v", err)
@@ -43,17 +49,17 @@ func defineAst(outputDir string, baseName string, types []string) error {
 
 	var builder strings.Builder
 
-	imports := []string{"github.com/joshbochu/golox/token"}
+	imports := []string{"github.com/joshbochu/golox/token", "github.com/joshbochu/golox/expr"}
 
 	// Extract package name from the directory's base name
-	packageName := filepath.Base(outputDir)
-	builder.WriteString(fmt.Sprintf("package %s\n", packageName))
+	packageName := filepath.Base(dirPath)
+	builder.WriteString(fmt.Sprintf("package %s\n\n", packageName))
 
 	builder.WriteString("import (\n")
 	for _, pkg := range imports {
 		builder.WriteString(fmt.Sprintf("\t\"%s\"\n", pkg))
 	}
-	builder.WriteString(")\n")
+	builder.WriteString(")\n\n")
 
 	builder.WriteString(fmt.Sprintf("type %s interface {\n", baseName))
 	builder.WriteString(fmt.Sprintf("\tAccept(visitor %sVisitor) (interface{}, error)\n", baseName))
@@ -67,9 +73,8 @@ func defineAst(outputDir string, baseName string, types []string) error {
 			return fmt.Errorf("invalid type definition %s", typeDef)
 		}
 		typeName := strings.TrimSpace(parts[0])
-		builder.WriteString(fmt.Sprintf("\tVisit%s%s(expr * %s) (interface{}, error)\n", typeName, baseName, typeName))
+		builder.WriteString(fmt.Sprintf("\tVisit%s%s(expr *%s) (interface{}, error)\n", typeName, baseName, typeName))
 	}
-
 	builder.WriteString("}\n\n")
 
 	for _, typeDef := range types {
@@ -85,9 +90,6 @@ func defineAst(outputDir string, baseName string, types []string) error {
 			field = strings.TrimSpace(field)
 			fieldParts := strings.Split(field, " ")
 			fieldType := fieldParts[0]
-			if fieldType == "Token" {
-				fieldType = "token.Token"
-			}
 			if fieldType == "Object" {
 				fieldType = "interface{}"
 			}
@@ -95,12 +97,13 @@ func defineAst(outputDir string, baseName string, types []string) error {
 			builder.WriteString(fmt.Sprintf("\t%s %s\n", fieldName, fieldType))
 		}
 		builder.WriteString("}\n\n")
-		builder.WriteString(fmt.Sprintf("func (e *%s) Accept(visitor %sVisitor) (interface{}, error){\n", typeName, baseName))
+		builder.WriteString(fmt.Sprintf("func (e *%s) Accept(visitor %sVisitor) (interface{}, error) {\n", typeName, baseName))
 		builder.WriteString(fmt.Sprintf("\tval, err := visitor.Visit%s%s(e)\n", typeName, baseName))
 		builder.WriteString("\tif err != nil {\n\t\treturn nil, err\n\t}\n")
 		builder.WriteString("\treturn val, nil\n")
 		builder.WriteString("}\n\n")
 	}
+
 	_, err = file.WriteString(builder.String())
 	if err != nil {
 		return fmt.Errorf("failed to write to file: %v", err)

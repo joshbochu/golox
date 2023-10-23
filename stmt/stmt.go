@@ -1,4 +1,8 @@
-package expr
+package stmt
+
+import (
+	"github.com/joshbochu/golox/expr"
+)
 
 type Stmt interface {
 	Accept(visitor StmtVisitor) (interface{}, error)
@@ -10,7 +14,7 @@ type StmtVisitor interface {
 }
 
 type Expression struct {
-	expression Expr
+	expression expr.Expr
 }
 
 func (e *Expression) Accept(visitor StmtVisitor) (interface{}, error) {
@@ -22,7 +26,7 @@ func (e *Expression) Accept(visitor StmtVisitor) (interface{}, error) {
 }
 
 type Print struct {
-	expression Expr
+	expression expr.Expr
 }
 
 func (e *Print) Accept(visitor StmtVisitor) (interface{}, error) {
