@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/joshbochu/golox/expr"
 	"github.com/joshbochu/golox/loxerror"
+	"github.com/joshbochu/golox/stmt"
 	"github.com/joshbochu/golox/token"
 )
 
@@ -40,12 +41,17 @@ func NewParser(tokens []token.Token) *Parser {
 	}
 }
 
-func (p *Parser) Parse() (expr.Expr, error) {
-	expression, err := p.expression()
-	if err != nil {
-		return nil, nil
+func (p *Parser) Parse() ([]stmt.Stmt, error) {
+	statements := []stmt.Stmt{}
+	for !p.isAtEnd() {
+		statements = append(statements, statement())
 	}
-	return expression, nil
+	return statements, nil
+}
+
+// TODO
+func statement() stmt.Stmt {
+	return &stmt.Expression{}
 }
 
 // expression     → equality ;
