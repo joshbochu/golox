@@ -7,18 +7,6 @@ import (
 	"github.com/joshbochu/golox/token"
 )
 
-type ParseError struct {
-	message string
-}
-
-func NewParseError(message string) *ParseError {
-	return &ParseError{message: message}
-}
-
-func (e *ParseError) Error() string {
-	return e.message
-}
-
 /* Eval Order
 expression     → equality ;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -203,7 +191,7 @@ func (p *Parser) consume(tokenType token.TokenType, messsage string) (token.Toke
 
 func (p *Parser) error(token token.Token, message string) error {
 	loxerror.ErrorToken(token, message)
-	return NewParseError(message)
+	return loxerror.NewParseError(message)
 }
 
 func (p *Parser) match(tokenTypes ...token.TokenType) bool {

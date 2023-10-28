@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/joshbochu/golox/interpreter"
 	"github.com/joshbochu/golox/loxerror"
+	"github.com/joshbochu/golox/parser"
+	"github.com/joshbochu/golox/scanner"
 )
 
 func main() {
@@ -54,16 +57,13 @@ func runPrompt() {
 
 // temp
 func run(source string) {
-	// scanner := scanner.NewScanner(source)
-	// tokens := scanner.ScanTokens()
-	// parser := parser.NewParser(tokens)
-	// expression, err := parser.Parse()
-	// if err != nil && loxerror.LoxError.HadError {
-	// 	return
-	// }
-	// printer := &astprinter.Printer{}
-	// fmt.Println(expression.Accept(printer))
-
-	// interpreter := interpreter.NewInterpreter()
-	// interpreter.Interpret(expression)
+	scanner := scanner.NewScanner(source)
+	tokens := scanner.ScanTokens()
+	parser := parser.NewParser(tokens)
+	statements, err := parser.Parse()
+	if err != nil && loxerror.LoxError.HadError {
+		return
+	}
+	interpreter := interpreter.NewInterpreter()
+	interpreter.Interpret(statements)
 }

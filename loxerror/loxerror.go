@@ -4,9 +4,33 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joshbochu/golox/interpreter"
 	"github.com/joshbochu/golox/token"
 )
+
+type RuntimeError struct {
+	Token   token.Token
+	Message string
+}
+
+func NewRuntimeError(token token.Token, message string) *RuntimeError {
+	return &RuntimeError{Token: token, Message: message}
+}
+
+func (e *RuntimeError) Error() string {
+	return e.Message
+}
+
+type ParseError struct {
+	message string
+}
+
+func NewParseError(message string) *ParseError {
+	return &ParseError{message: message}
+}
+
+func (e *ParseError) Error() string {
+	return e.message
+}
 
 // LoxError is the global instance of the ErrorHandler.
 var LoxError = &ErrorHandler{HadError: false, HadRuntimeError: false}
@@ -36,7 +60,7 @@ func ErrorToken(t token.Token, message string) {
 }
 
 // ErrorRuntime sets the HadError flag for runtime errors.
-func ErrorRuntime(error interpreter.RuntimeError) {
+func ErrorRuntime(error RuntimeError) {
 	fmt.Fprintf(os.Stderr, "%s\n[line %d]", error.Message, error.Token.Line)
 	LoxError.HadError = true
 }

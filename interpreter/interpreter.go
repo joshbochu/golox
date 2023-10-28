@@ -4,21 +4,10 @@ import (
 	"fmt"
 
 	"github.com/joshbochu/golox/expr"
+	"github.com/joshbochu/golox/loxerror"
+	"github.com/joshbochu/golox/stmt"
 	"github.com/joshbochu/golox/token"
 )
-
-type RuntimeError struct {
-	Token   token.Token
-	Message string
-}
-
-func NewRuntimeError(token token.Token, message string) *RuntimeError {
-	return &RuntimeError{Token: token, Message: message}
-}
-
-func (e *RuntimeError) Error() string {
-	return e.Message
-}
 
 type Interpreter struct{}
 
@@ -26,12 +15,15 @@ func NewInterpreter() *Interpreter {
 	return &Interpreter{}
 }
 
-func (i *Interpreter) Interpret(expr expr.Expr) {
-	val, err := i.evaluate(expr)
-	if err != nil {
-		// reportruntimeerror
+func (i *Interpreter) Interpret(statements []stmt.Stmt) {
+	for _, statement := range statements {
+		i.execute(statement)
 	}
-	fmt.Println(stringify(val))
+
+}
+
+func (i *Interpreter) execute(stmt stmt.Stmt) (interface{}, error) {
+	return stmt.Accept(i)
 }
 
 // TODO
@@ -53,6 +45,17 @@ func stringify(object interface{}) string {
 
 func (i *Interpreter) evaluate(expr expr.Expr) (interface{}, error) {
 	return expr.Accept(i)
+}
+
+func (i *Interpreter) VisitExpressionStmt(stmt *stmt.Expression) (interface{}, error) {
+	i.evaluate(stmt.Expression)
+	return nil, nil
+}
+
+func (i *Interpreter) VisitPrintStmt(stmt *stmt.Print) (interface{}, error) {
+	v, _ := i.evaluate(stmt.Expression)
+	fmt.Println(stringify(v))
+	return nil, nil
 }
 
 func (i *Interpreter) VisitLiteralExpr(expr *expr.Literal) (interface{}, error) {
@@ -133,7 +136,7 @@ func (i *Interpreter) VisitBinaryExpr(expr *expr.Binary) (interface{}, error) {
 			return leftStr + rightStr, nil
 		}
 
-		return nil, NewRuntimeError(expr.Operator, "operands must be two numbers or two strings for + operator.")
+		return nil, loxerror.NewRuntimeError(expr.Operator, "operands must be two numbers or two strings for + operator.")
 	}
 
 	return nil, nil
@@ -158,7 +161,7 @@ func (i *Interpreter) VisitUnaryExpr(expr *expr.Unary) (interface{}, error) {
 func checkNumberOperand(operator token.Token, operand interface{}) (float64, error) {
 	num, ok := operand.(float64)
 	if !ok {
-		return 0.0, NewRuntimeError(operator, "operand must be a number")
+		return 0.0, loxerror.NewRuntimeError(operator, "operand must be a number")
 	}
 	return num, nil
 }
@@ -167,7 +170,7 @@ func checkNumberOperands(operator token.Token, leftOperand interface{}, rightOpe
 	leftNum, leftOk := leftOperand.(float64)
 	rightNum, rightOk := rightOperand.(float64)
 	if !(leftOk && rightOk) {
-		return 0.0, 0.0, NewRuntimeError(operator, "operands must be numbers")
+		return 0.0, 0.0, loxerror.NewRuntimeError(operator, "operands must be numbers")
 	}
 	return leftNum, rightNum, nil
 
