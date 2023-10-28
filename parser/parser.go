@@ -44,14 +44,46 @@ func NewParser(tokens []token.Token) *Parser {
 func (p *Parser) Parse() ([]stmt.Stmt, error) {
 	statements := []stmt.Stmt{}
 	for !p.isAtEnd() {
-		statements = append(statements, statement())
+		stmt, err := p.statement()
+		if err != nil {
+			return nil, err
+		}
+		statements = append(statements, stmt)
 	}
 	return statements, nil
 }
 
-// TODO
-func statement() stmt.Stmt {
-	return &stmt.Expression{}
+func (p *Parser) statement() (stmt.Stmt, error) {
+	if p.match(token.PRINT) {
+		stmt, err := p.printStatement()
+		if err != nil {
+			return nil, err
+		}
+		return stmt, nil
+	}
+	expr, err := p.expressionStatement() // todo expressionstatemetn
+	if err != nil {
+		return nil, err
+	}
+	return expr, nil
+}
+
+func (p *Parser) printStatement() (stmt.Stmt, error) {
+	value, err := p.expression()
+	if err != nil {
+		return nil, err
+	}
+	p.consume(token.SEMICOLON, "Expect ';' after value.")
+	return &stmt.Print{Expression: value}, nil
+}
+
+func (p *Parser) expressionStatement() (stmt.Stmt, error) {
+	expr, err := p.expression()
+	if err != nil {
+		return nil, err
+	}
+	p.consume(token.SEMICOLON, "Expect ';' after expression.")
+	return &stmt.Expression{Expression: expr}, nil
 }
 
 // expression     → equality ;
@@ -210,6 +242,7 @@ func (p *Parser) previous() token.Token {
 	return p.tokens[p.current-1]
 }
 
+// TODO still
 func (p *Parser) synchronize() {
 	p.advance()
 
