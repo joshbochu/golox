@@ -13,6 +13,7 @@ type ExprVisitor interface {
 	VisitGroupingExpr(expr *Grouping) (interface{}, error)
 	VisitLiteralExpr(expr *Literal) (interface{}, error)
 	VisitUnaryExpr(expr *Unary) (interface{}, error)
+	VisitVariableExpr(expr *Variable) (interface{}, error)
 }
 
 type Binary struct {
@@ -60,6 +61,18 @@ type Unary struct {
 
 func (e *Unary) Accept(visitor ExprVisitor) (interface{}, error) {
 	val, err := visitor.VisitUnaryExpr(e)
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
+}
+
+type Variable struct {
+	Name token.Token
+}
+
+func (e *Variable) Accept(visitor ExprVisitor) (interface{}, error) {
+	val, err := visitor.VisitVariableExpr(e)
 	if err != nil {
 		return nil, err
 	}

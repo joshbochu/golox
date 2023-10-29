@@ -9,6 +9,11 @@ import (
 
 type Printer struct{}
 
+// VisitVariableExpr implements expr.ExprVisitor.
+func (*Printer) VisitVariableExpr(expr *expr.Variable) (interface{}, error) {
+	panic("unimplemented")
+}
+
 func (p *Printer) VisitBinaryExpr(expr *expr.Binary) (interface{}, error) {
 	v, _ := p.parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right)
 	return v, nil

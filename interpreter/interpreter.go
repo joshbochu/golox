@@ -11,6 +11,11 @@ import (
 
 type Interpreter struct{}
 
+// VisitVariableExpr implements expr.ExprVisitor.
+func (*Interpreter) VisitVariableExpr(expr *expr.Variable) (interface{}, error) {
+	panic("unimplemented")
+}
+
 // VisitVarStmt implements stmt.StmtVisitor.
 func (*Interpreter) VisitVarStmt(expr *stmt.Var) (interface{}, error) {
 	panic("unimplemented")

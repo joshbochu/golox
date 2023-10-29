@@ -20,6 +20,7 @@ func main() {
 		"Grouping : Expr Expression",
 		"Literal  : Object Value",
 		"Unary    : token.Token Operator, Expr Right",
+		"Variable : token.Token Name",
 	})
 	defineAst(outputDir, "Stmt", []string{
 		"Expression : expr.Expr Expression",
