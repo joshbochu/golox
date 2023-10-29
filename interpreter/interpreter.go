@@ -11,6 +11,11 @@ import (
 
 type Interpreter struct{}
 
+// VisitVarStmt implements stmt.StmtVisitor.
+func (*Interpreter) VisitVarStmt(expr *stmt.Var) (interface{}, error) {
+	panic("unimplemented")
+}
+
 func NewInterpreter() *Interpreter {
 	return &Interpreter{}
 }
